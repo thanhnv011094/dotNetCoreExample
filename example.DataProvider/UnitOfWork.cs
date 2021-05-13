@@ -9,9 +9,11 @@ namespace example.DataProvider
         public UnitOfWork(DbContext dbContext)
         {
             _dbContext = dbContext;
-            GroupReponsitory = new GroupReponsitory(_dbContext);
+            RoleReponsitory = new RoleReponsitory(_dbContext);
+            UserReponsitory = new UserReponsitory(_dbContext);
         }
-        public IGroupReponsitory GroupReponsitory { get; }
+        public IRoleReponsitory RoleReponsitory { get; }
+        public IUserReponsitory UserReponsitory { get; }
 
         public void Dispose()
         {

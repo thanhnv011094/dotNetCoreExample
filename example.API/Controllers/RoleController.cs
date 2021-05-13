@@ -1,5 +1,5 @@
 ﻿using example.DataProvider;
-using example.DataProvider.Models;
+using example.DataProvider.Entities;
 using example.DataProvider.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,32 +11,31 @@ using System.Threading.Tasks;
 
 namespace example.API.Controllers
 {
-    [Authorize]
+    [Helpers.Authorize]
     [ApiController]
-    [Route("[controller]")]
-    public class GroupController : ControllerBase
+    [Route("api/[controller]")]
+    public class RoleController : ControllerBase
     {
-        private readonly ILogger<GroupController> _logger;
+        private readonly ILogger<RoleController> _logger;
         private readonly IUnitOfWork _unitOfWork;
 
-        public GroupController(ILogger<GroupController> logger, IUnitOfWork unitOfWork)
+        public RoleController(ILogger<RoleController> logger, IUnitOfWork unitOfWork)
         {
             _logger = logger;
             _unitOfWork = unitOfWork;
         }
 
         [HttpGet]
-        [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
-            var all = await _unitOfWork.GroupReponsitory.GetAll();
-            _unitOfWork.GroupReponsitory.Add(new Group()
+            var all = await _unitOfWork.RoleReponsitory.GetAll();
+            _unitOfWork.RoleReponsitory.Add(new Role()
             {
                 Name = $"Group {all.Count() + 1}"
             });
 
             _unitOfWork.Complete();
-            return Ok(_unitOfWork.GroupReponsitory.GetAll().Result);
+            return Ok(_unitOfWork.RoleReponsitory.GetAll().Result);
         }
     }
 }
