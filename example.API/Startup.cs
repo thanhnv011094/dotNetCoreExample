@@ -38,14 +38,18 @@ namespace example.API
             // configure strongly typed settings object
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
 
-            services.AddDbContext<ExampleContext>();
+            //services.AddDbContext<ExampleContext>();
+
+            services.AddEntityFrameworkNpgsql().AddDbContext<ExampleContext>(opt =>
+            {
+                opt.UseNpgsql("User ID =example;Password=1111;Server=localhost;Port=5433;Database=example_db;Integrated Security=true; Pooling=true;");
+            });
             services.AddIdentity<User, Role>()
                             .AddEntityFrameworkStores<ExampleContext>()
                             .AddDefaultTokenProviders();
 
-            services.AddSingleton<DbContext, ExampleContext>();
-            services.AddSingleton<IUnitOfWork, UnitOfWork>();
-
+            services.AddScoped<DbContext, ExampleContext>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<UserManager<User>, UserManager<User>>();
             services.AddScoped<SignInManager<User>, SignInManager<User>>();
             services.AddScoped<RoleManager<Role>, RoleManager<Role>>();
@@ -54,11 +58,6 @@ namespace example.API
             services.AddAuthentication(AzureADDefaults.BearerAuthenticationScheme)
                 .AddAzureADBearer(options => Configuration.Bind("AzureAd", options));
             services.AddControllers();
-
-            //services.AddEntityFrameworkNpgsql().AddDbContext<ExampleContext>(opt =>
-            //{
-            //    opt.UseNpgsql("User ID =example;Password=1111;Server=localhost;Port=5433;Database=example_db;Integrated Security=true; Pooling=true;");
-            //});
 
             // https://www.c-sharpcorner.com/article/authentication-authorization-using-net-core-web-api-using-jwt-token-and/
             // Register the Swagger generator, defining 1 or more Swagger documents
