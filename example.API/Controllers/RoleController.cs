@@ -29,13 +29,13 @@ namespace example.API.Controllers
         public async Task<IActionResult> Index()
         {
             var all = await _unitOfWork.RoleReponsitory.GetAll();
-            _unitOfWork.RoleReponsitory.Add(new Role()
-            {
-                Name = $"Group {all.Count() + 1}"
-            });
+            //_unitOfWork.RoleReponsitory.Add(new Role()
+            //{
+            //    Name = $"Group {all.Count() + 1}"
+            //});
 
-            _unitOfWork.Complete();
-            return Ok(_unitOfWork.RoleReponsitory.GetAll().Result);
+            //_unitOfWork.Complete();
+            return Ok(all);
         }
     }
 }
