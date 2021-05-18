@@ -1,6 +1,6 @@
 ﻿using example.API.Helpers;
-using example.API.Models;
 using example.DataProvider.Entities;
+using example.ViewModel.User;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -46,7 +46,14 @@ namespace example.API.Services
             // authentication successful so generate jwt token
             var token = await generateJwtToken(user);
 
-            return new AuthenticateUserResponse(user, token);
+            return new AuthenticateUserResponse
+            {
+                Id = user.Id,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                UserName = user.UserName,
+                Token = token
+            };
         }
 
         public async Task<User> GetByUserName(string userName)

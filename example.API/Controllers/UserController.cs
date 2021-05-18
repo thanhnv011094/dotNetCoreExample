@@ -1,7 +1,7 @@
-﻿using example.API.Models;
-using example.API.Services;
+﻿using example.API.Services;
 using example.DataProvider;
 using example.DataProvider.Entities;
+using example.ViewModel.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;

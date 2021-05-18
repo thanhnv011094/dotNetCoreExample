@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\example.DataProvider\example.DataProvider.csproj" />
+    <ProjectReference Include="..\example.ViewModel\example.ViewModel.csproj" />
   </ItemGroup>
 
 </Project>

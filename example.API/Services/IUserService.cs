@@ -1,5 +1,5 @@
-﻿using example.API.Models;
-using example.DataProvider.Entities;
+﻿using example.DataProvider.Entities;
+using example.ViewModel.User;
 using System.Threading.Tasks;
 
 namespace example.API.Services
