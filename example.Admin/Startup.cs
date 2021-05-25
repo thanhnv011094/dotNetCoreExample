@@ -1,4 +1,5 @@
 using example.Admin.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -27,7 +28,13 @@ namespace example.Admin
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSession(options => {
-                options.IdleTimeout = TimeSpan.FromMinutes(30);
+                options.IdleTimeout = TimeSpan.FromMinutes(3);
+            });
+
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
+            {
+                options.LoginPath = "/User/Login";
+                options.AccessDeniedPath = "/Home/Error";
             });
 
             services.AddControllersWithViews();
@@ -54,7 +61,9 @@ namespace example.Admin
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
+
             app.UseSession();
             app.UseEndpoints(endpoints =>
             {

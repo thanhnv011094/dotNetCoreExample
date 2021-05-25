@@ -95,8 +95,9 @@ namespace example.API.Services
             {
                 Subject = new ClaimsIdentity(
                     new[] {
-                        new Claim("UserName", user.UserName.ToString()),
-                        new Claim("Roles",string.Join(",", roles))
+                        new Claim(ClaimTypes.Name, user.UserName.ToString()),
+                        new Claim(ClaimTypes.GivenName, user.FirstName.ToString()),
+                        new Claim(ClaimTypes.Role,string.Join(",", roles))
                     }
                 ),
                 Expires = DateTime.UtcNow.AddMinutes(3),

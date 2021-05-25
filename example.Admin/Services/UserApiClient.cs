@@ -22,9 +22,10 @@ namespace example.Admin.Services
             return await PostAsync<AuthenticateUserResponse>(url, request);
         }
 
-        public Task<RegisterUserResponse> Register(RegisterUserRequest request)
+        public async Task<RegisterUserResponse> Register(RegisterUserRequest request)
         {
-            throw new NotImplementedException();
+            string url = "api/user/register";
+            return await PostAsync<RegisterUserResponse>(url, request);
         }
     }
 }

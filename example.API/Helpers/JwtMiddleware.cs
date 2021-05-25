@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -50,7 +51,7 @@ namespace example.API.Helpers
                 }, out SecurityToken validatedToken);
 
                 var jwtToken = (JwtSecurityToken)validatedToken;
-                var userName = jwtToken.Claims.First(x => x.Type == "UserName").Value;
+                var userName = jwtToken.Claims.First(x => x.Type == ClaimTypes.Name).Value;
 
                 // attach user to context on successful jwt validation
                 context.Items["User"] = userService.GetByUserName(userName).Result;
