@@ -20,7 +20,6 @@ using System.Threading.Tasks;
 
 namespace example.Admin.Controllers
 {
-    //[Route("/user/")]
     public class UserController : Controller
     {
         private readonly ILogger<UserController> _logger;
