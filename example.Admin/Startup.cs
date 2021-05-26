@@ -33,8 +33,9 @@ namespace example.Admin
 
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
             {
-                options.LoginPath = "/User/Login";
-                options.AccessDeniedPath = "/Home/Error";
+                options.LoginPath = "/user/login";
+                options.AccessDeniedPath = "/home/error";
+                options.ReturnUrlParameter = "next";
             });
 
             services.AddControllersWithViews();
@@ -52,7 +53,7 @@ namespace example.Admin
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");
+                app.UseExceptionHandler("/home/error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
@@ -70,6 +71,14 @@ namespace example.Admin
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+                //https://rehansaeed.com/seo-friendly-urls-asp-net-core/
+                //https://stackoverflow.com/questions/63397267/custom-route-and-action-names-in-asp-net-core-mvc
+
+                //endpoints.MapControllerRoute(
+                //name: "user",
+                //pattern: "user/forgot-password/{title}",
+                //defaults: new { controller = "User", action = "ForgotPassword" });
             });
         }
     }

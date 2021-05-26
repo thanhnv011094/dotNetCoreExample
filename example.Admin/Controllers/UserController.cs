@@ -1,7 +1,9 @@
-﻿using example.Admin.Services;
+﻿using example.Admin.Helpers;
+using example.Admin.Services;
 using example.ViewModel.User;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -18,6 +20,7 @@ using System.Threading.Tasks;
 
 namespace example.Admin.Controllers
 {
+    //[Route("/user/")]
     public class UserController : Controller
     {
         private readonly ILogger<UserController> _logger;
@@ -34,22 +37,41 @@ namespace example.Admin.Controllers
             _configuration = configuration;
         }
 
-        public async Task<IActionResult> Index()
+        [Authorize]
+        [HttpGet("user/{id}/{title}", Name = "Index")]
+        public IActionResult Index(int id, string title)
         {
-            await _httpContextAccessor.HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            _httpContextAccessor.HttpContext.Session.Remove("Token");
-            return View("Login");
+            // Get the actual friendly version of the title.
+            string friendlyTitle = FriendlyUrlHelper.GetFriendlyTitle(User.Identity.Name);
+
+            // Compare the title with the friendly title.
+            if (!string.Equals(friendlyTitle, title, StringComparison.Ordinal))
+            {
+                // If the title is null, empty or does not match the friendly title, return a 301 Permanent
+                // Redirect to the correct friendly URL.
+                return this.RedirectToRoutePermanent("Index", new { id = id, title = friendlyTitle });
+            }
+
+            // The URL the client has browsed to is correct, show them the view containing the product.
+            return View();
+        }
+
+        [Authorize]
+        [HttpGet("user/{id}")]
+        public IActionResult Index(int id)
+        {
+            return Index(id, "");
         }
 
         public async Task<IActionResult> Login()
         {
             await _httpContextAccessor.HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             _httpContextAccessor.HttpContext.Session.Remove("Token");
-            return View();
+            return View("login");
         }
 
         [HttpPost]
-        public async Task<IActionResult> Login(AuthenticateUserRequest request)
+        public async Task<IActionResult> Login(AuthenticateUserRequest request, string next = "")
         {
             if (!ModelState.IsValid)
             {
@@ -60,7 +82,15 @@ namespace example.Admin.Controllers
             if (!string.IsNullOrEmpty(result.Token) && authenticationCookie(result.Token, request.RememberMe).Result)
             {
                 _httpContextAccessor.HttpContext.Session.SetString("Token", result.Token);
-                return RedirectToAction("Index", "Home");
+
+                if (!string.IsNullOrEmpty(next) && Url.IsLocalUrl(next))
+                {
+                    return Redirect(next);
+                }
+                else
+                {
+                    return RedirectToAction("index", "home");
+                }
             }
             return View(request);
         }
@@ -74,7 +104,7 @@ namespace example.Admin.Controllers
         {
             try
             {
-                //IdentityModelEventSource.ShowPII = true;
+                IdentityModelEventSource.ShowPII = true;
 
                 var tokenHandler = new JwtSecurityTokenHandler();
                 var key = Encoding.ASCII.GetBytes(_configuration["AppSettings:Secret"]);
@@ -132,7 +162,7 @@ namespace example.Admin.Controllers
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             _httpContextAccessor.HttpContext.Session.Remove("Token");
-            return RedirectToAction("Index", "User");
+            return RedirectToAction("login", "user");
         }
 
         public async Task<IActionResult> Register()
@@ -170,6 +200,13 @@ namespace example.Admin.Controllers
             }
 
             return View(request);
+        }
+
+        public async Task<IActionResult> ForgotPassword(string email)
+        {
+            await _httpContextAccessor.HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            _httpContextAccessor.HttpContext.Session.Remove("Token");
+            return View();
         }
     }
 }
