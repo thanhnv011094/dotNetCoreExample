@@ -20,6 +20,7 @@ using System.Threading.Tasks;
 
 namespace example.Admin.Controllers
 {
+    [Route("user")]
     public class UserController : Controller
     {
         private readonly ILogger<UserController> _logger;
@@ -37,7 +38,7 @@ namespace example.Admin.Controllers
         }
 
         [Authorize]
-        [HttpGet("user/{id}/{title}", Name = "Index")]
+        [HttpGet("profile/{id}/{title}", Name = "Index")]
         public IActionResult Index(int id, string title)
         {
             // Get the actual friendly version of the title.
@@ -56,12 +57,13 @@ namespace example.Admin.Controllers
         }
 
         [Authorize]
-        [HttpGet("user/{id}")]
+        [HttpGet("profile/{id}")]
         public IActionResult Index(int id)
         {
             return Index(id, "");
         }
 
+        [HttpGet("login")]
         public async Task<IActionResult> Login()
         {
             await _httpContextAccessor.HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
@@ -69,8 +71,8 @@ namespace example.Admin.Controllers
             return View("login");
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Login(AuthenticateUserRequest request, string next = "")
+        [HttpPost("login/{next}")]
+        public async Task<IActionResult> Login([FromForm]AuthenticateUserRequest request, [FromRoute]string next)
         {
             if (!ModelState.IsValid)
             {
@@ -92,6 +94,12 @@ namespace example.Admin.Controllers
                 }
             }
             return View(request);
+        }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromForm] AuthenticateUserRequest request)
+        {
+            return await Login(request, "");
         }
 
         /// <summary>
@@ -157,6 +165,7 @@ namespace example.Admin.Controllers
             return false;
         }
 
+        [HttpGet("logout")]
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
@@ -164,6 +173,7 @@ namespace example.Admin.Controllers
             return RedirectToAction("login", "user");
         }
 
+        [HttpGet("register")]
         public async Task<IActionResult> Register()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
@@ -174,8 +184,8 @@ namespace example.Admin.Controllers
             return View();
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Register(RegisterUserRequest request)
+        [HttpPost("register")]
+        public async Task<IActionResult> Register([FromForm]RegisterUserRequest request)
         {
             if (!ModelState.IsValid)
             {
@@ -201,10 +211,19 @@ namespace example.Admin.Controllers
             return View(request);
         }
 
-        public async Task<IActionResult> ForgotPassword(string email)
+        [HttpGet("forgot-password")]
+        public async Task<IActionResult> ForgotPassword()
         {
             await _httpContextAccessor.HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             _httpContextAccessor.HttpContext.Session.Remove("Token");
+            return View();
+        }
+
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordRequest request)
+        {
+            //await _httpContextAccessor.HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            //_httpContextAccessor.HttpContext.Session.Remove("Token");
             return View();
         }
     }
