@@ -37,6 +37,9 @@ namespace example.Admin
                 options.LoginPath = "/user/login";
                 options.AccessDeniedPath = "/home/error";
                 options.ReturnUrlParameter = "next";
+            }).AddGoogle(options => {
+                options.ClientSecret = "tjE8wZxm8gcBinAmNVdLKt0S";
+                options.ClientId = "732655072130-ihfh67msog7afqph0v36b596vdunmakr.apps.googleusercontent.com";
             });
 
             services.AddControllersWithViews();
