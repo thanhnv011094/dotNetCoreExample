@@ -29,7 +29,7 @@ namespace example.DataProvider.EF
 
         //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         //{
-        //    optionsBuilder.UseNpgsql("User ID =example;Password=1111;Server=localhost;Port=5433;Database=example_db;Integrated Security=true; Pooling=true;");
+        //    optionsBuilder.UseNpgsql("User ID =example;Password=1111;Server=localhost;Port=5432;Database=example_db;Integrated Security=true; Pooling=true;");
         //}
     }
 }

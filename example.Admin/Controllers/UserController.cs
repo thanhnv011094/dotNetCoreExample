@@ -195,8 +195,8 @@ namespace example.Admin.Controllers
             var result = await _userApiClient.Register(request);
             if(!string.IsNullOrEmpty(result.FirstName) && !string.IsNullOrEmpty(result.FirstName))
             {
-                await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-                _httpContextAccessor.HttpContext.Session.Remove("Token");
+                //await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+                //_httpContextAccessor.HttpContext.Session.Remove("Token");
 
                 var userLogin = new AuthenticateUserRequest()
                 {

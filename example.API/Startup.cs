@@ -42,7 +42,7 @@ namespace example.API
 
             services/*.AddEntityFrameworkNpgsql()*/.AddDbContext<ExampleContext>(opt =>
             {
-                opt.UseNpgsql("User ID =example;Password=1111;Server=localhost;Port=5433;Database=example_db;Integrated Security=true; Pooling=true;");
+                opt.UseNpgsql("User ID =example;Password=1111;Server=localhost;Port=5432;Database=example_db;Integrated Security=true; Pooling=true;", b => b.MigrationsAssembly("example.API"));
             });
             services.AddIdentity<User, Role>()
                             .AddEntityFrameworkStores<ExampleContext>()
