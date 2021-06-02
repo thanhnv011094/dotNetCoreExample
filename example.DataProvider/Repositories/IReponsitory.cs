@@ -7,10 +7,10 @@ namespace example.DataProvider.Repositories
 {
     public interface IReponsitory<T> where T : class
     {
-        Task<T> GetById(int id);
-        Task<IEnumerable<T>> GetAll();
+        Task<T> GetByIdAsync(int id);
+        Task<IEnumerable<T>> GetAllAsync();
 
-        Task<IEnumerable<T>> Find(Expression<Func<T, bool>> predicate);
+        Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate);
 
         void Add(T entity);
 

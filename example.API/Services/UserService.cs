@@ -1,4 +1,5 @@
 ﻿using example.API.Helpers;
+using example.DataProvider;
 using example.DataProvider.Entities;
 using example.ViewModel.User;
 using Microsoft.AspNetCore.Identity;
@@ -18,21 +19,26 @@ namespace example.API.Services
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signinManager;
         private readonly RoleManager<Role> _roleManager;
+        private readonly IUnitOfWork _unitOfWork;
 
         public UserService(IOptions<AppSettings> appSettings,
             UserManager<User> userManager,
             SignInManager<User> signinManager,
-            RoleManager<Role> roleManager)
+            RoleManager<Role> roleManager,
+            IUnitOfWork unitOfWork)
         {
             _appSettings = appSettings.Value;
             _userManager = userManager;
             _signinManager = signinManager;
             _roleManager = roleManager;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<AuthenticateUserResponse> Authenticate(AuthenticateUserRequest request)
         {
             var user = await _userManager.FindByNameAsync(request.UserName);
+
+            //var x = await _unitOfWork.UserReponsitory.GetAllAsync();
 
             // return null if user not found
             if (user == null) return null;
@@ -43,8 +49,10 @@ namespace example.API.Services
                 return null;
             }
 
+            await _signinManager.SignOutAsync();
+
             // authentication successful so generate jwt token
-            var token = await generateJwtToken(user);
+            var token = await GenerateJwtToken(user);
 
             return new AuthenticateUserResponse
             {
@@ -85,7 +93,7 @@ namespace example.API.Services
 
         // helper methods
 
-        private async Task<string> generateJwtToken(User user)
+        private async Task<string> GenerateJwtToken(User user)
         {
             // generate token that is valid for 3 mins
             var tokenHandler = new JwtSecurityTokenHandler();

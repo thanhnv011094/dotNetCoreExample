@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace example.API.Controllers
 {
-    [Helpers.Authorize]
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class RoleController : ControllerBase
@@ -26,9 +26,24 @@ namespace example.API.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Index()
         {
-            var all = await _unitOfWork.RoleReponsitory.GetAll();
+            var all = await _unitOfWork.RoleReponsitory.GetAllAsync();
+            //_unitOfWork.RoleReponsitory.Add(new Role()
+            //{
+            //    Name = $"Group {all.Count() + 1}"
+            //});
+
+            //_unitOfWork.Complete();
+            return Ok(all);
+        }
+
+        [HttpGet("{id}")]
+        [Authorize(Roles = "")]
+        public async Task<IActionResult> Index(int id)
+        {
+            var all = await _unitOfWork.RoleReponsitory.GetAllAsync();
             //_unitOfWork.RoleReponsitory.Add(new Role()
             //{
             //    Name = $"Group {all.Count() + 1}"
