@@ -25,26 +25,26 @@ namespace example.API.Controllers
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signinManager;
         private readonly RoleManager<Role> _roleManager;
-        private readonly IUserService _loginService; 
+        private readonly IUserService _userService; 
         public UserController(ILogger<UserController> logger,
             IUnitOfWork unitOfWork,
             UserManager<User> userManager,
             SignInManager<User> signinManager,
             RoleManager<Role> roleManager,
-            IUserService loginService)
+            IUserService userService)
         {
             _logger = logger;
             _unitOfWork = unitOfWork;
             _userManager = userManager;
             _signinManager = signinManager;
             _roleManager = roleManager;
-            _loginService = loginService;
+            _userService = userService;
         }
 
         [HttpPost("authenticate")]
         public async Task<IActionResult> Authenticate(AuthenticateUserRequest request)
         {
-            var response = await _loginService.Authenticate(request);
+            var response = await _userService.Authenticate(request);
 
             if (response == null)
                 return BadRequest(new { message = "Username or password is incorrect" });
@@ -55,10 +55,21 @@ namespace example.API.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterUserRequest request)
         {
-            var response = await _loginService.Register(request);
+            var response = await _userService.Register(request);
 
             if (response == null)
                 return BadRequest(new { message = "Can't create user, try again" });
+
+            return Ok(response);
+        }
+
+        [HttpPost("set-role")]
+        public async Task<IActionResult> SetRole(SetRoleUserRequest request)
+        {
+            var response = await _userService.SetRoleUser(request);
+
+            if (response == null)
+                return BadRequest(new { message = $"Can't set role '{request.RoleName}' for user '{request.UserName}', try again" });
 
             return Ok(response);
         }

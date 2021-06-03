@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -99,20 +100,43 @@ namespace example.API.Services
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
             var roles = await _userManager.GetRolesAsync(user);
+
+            var claims = new List<Claim>();
+            claims.Add(new Claim(ClaimTypes.Name, user.UserName.ToString()));
+            claims.Add(new Claim(ClaimTypes.GivenName, user.FirstName.ToString()));
+
+            // Add roles as multiple claims
+            foreach (var role in roles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
+            }
+
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Subject = new ClaimsIdentity(
-                    new[] {
-                        new Claim(ClaimTypes.Name, user.UserName.ToString()),
-                        new Claim(ClaimTypes.GivenName, user.FirstName.ToString()),
-                        new Claim(ClaimTypes.Role,string.Join(",", roles))
-                    }
+                Subject = new ClaimsIdentity(claims
+                //new[] {
+                //    new Claim(ClaimTypes.Name, user.UserName.ToString()),
+                //    new Claim(ClaimTypes.GivenName, user.FirstName.ToString()),
+                //    new Claim(ClaimTypes.Role,string.Join(",", roles))
+                //}
                 ),
                 Expires = DateTime.UtcNow.AddMinutes(3),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
+        }
+
+        public async Task<SetRoleUserResponse> SetRoleUser(SetRoleUserRequest request)
+        {
+            var user = await _userManager.FindByNameAsync(request.UserName);
+            var result = await _userManager.AddToRoleAsync(user, request.RoleName);
+            if (!result.Succeeded)
+            {
+                return null;
+            }
+
+            return new SetRoleUserResponse();
         }
     }
 }

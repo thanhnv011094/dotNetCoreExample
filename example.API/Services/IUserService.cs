@@ -9,5 +9,6 @@ namespace example.API.Services
         Task<AuthenticateUserResponse> Authenticate(AuthenticateUserRequest request);
         Task<RegisterUserResponse> Register(RegisterUserRequest request);
         Task<User> GetByUserName(string userName);
+        Task<SetRoleUserResponse> SetRoleUser(SetRoleUserRequest request);
     }
 }

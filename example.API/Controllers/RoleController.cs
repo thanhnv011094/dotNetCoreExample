@@ -1,7 +1,9 @@
 ﻿using example.DataProvider;
 using example.DataProvider.Entities;
 using example.DataProvider.Repositories;
+using example.ViewModel.Role;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -18,11 +20,20 @@ namespace example.API.Controllers
     {
         private readonly ILogger<RoleController> _logger;
         private readonly IUnitOfWork _unitOfWork;
-
-        public RoleController(ILogger<RoleController> logger, IUnitOfWork unitOfWork)
+        private readonly UserManager<User> _userManager;
+        private readonly SignInManager<User> _signinManager;
+        private readonly RoleManager<Role> _roleManager;
+        public RoleController(ILogger<RoleController> logger,
+            IUnitOfWork unitOfWork,
+            UserManager<User> userManager,
+            SignInManager<User> signinManager,
+            RoleManager<Role> roleManager)
         {
             _logger = logger;
             _unitOfWork = unitOfWork;
+            _userManager = userManager;
+            _signinManager = signinManager;
+            _roleManager = roleManager;
         }
 
         [HttpGet]
@@ -40,10 +51,10 @@ namespace example.API.Controllers
         }
 
         [HttpGet("{id}")]
-        [Authorize(Roles = "")]
+        [Authorize(Roles = "Admin1, guest")]
         public async Task<IActionResult> Index(int id)
         {
-            var all = await _unitOfWork.RoleReponsitory.GetAllAsync();
+            var all = await _unitOfWork.RoleReponsitory.FindAsync(x => x.Id == id);
             //_unitOfWork.RoleReponsitory.Add(new Role()
             //{
             //    Name = $"Group {all.Count() + 1}"
@@ -51,6 +62,25 @@ namespace example.API.Controllers
 
             //_unitOfWork.Complete();
             return Ok(all);
+        }
+
+        [HttpPost("create")]
+        public async Task<IActionResult> CreateRole(CreateRoleRequest request)
+        {
+            var newRole = new Role()
+            {
+                Name = request.Name,
+                Description = request.Description ?? request.Name
+            };
+
+            var result = await _roleManager.CreateAsync(newRole);
+
+            if (result.Succeeded)
+            {
+                return Ok(newRole);
+            }
+
+            return Ok();
         }
     }
 }

@@ -228,6 +228,7 @@ namespace example.Admin.Controllers
             return View();
         }
 
+        #region Google login
         [HttpGet("google-login")]
         public IActionResult GoogleLogin()
         {
@@ -251,5 +252,9 @@ namespace example.Admin.Controllers
 
             return Json(claims);
         }
+        #endregion
+
+
+
     }
 }
