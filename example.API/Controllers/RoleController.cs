@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace example.API.Controllers
@@ -38,6 +39,7 @@ namespace example.API.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin1")]
         public async Task<IActionResult> Index()
         {
             var all = await _unitOfWork.RoleReponsitory.GetAllAsync();
@@ -51,7 +53,8 @@ namespace example.API.Controllers
         }
 
         [HttpGet("{id}")]
-        [Authorize(Roles = "Admin1, guest")]
+        //[Authorize(Roles = "Admin1")]
+        [Authorize(Roles = "guest")]
         public async Task<IActionResult> Index(int id)
         {
             var all = await _unitOfWork.RoleReponsitory.FindAsync(x => x.Id == id);
@@ -80,7 +83,23 @@ namespace example.API.Controllers
                 return Ok(newRole);
             }
 
-            return Ok();
+            return Ok(new CreateRoleResponse());
+        }
+
+
+        [HttpPost("add-claim")]
+        [Authorize("XXX")]
+        public async Task<IActionResult> AddClaim(AddClaimRoleRequest request)
+        {
+            var role = await _roleManager.FindByNameAsync(request.RoleName);
+            var result = await _roleManager.AddClaimAsync(role, new Claim(request.ClaimType, request.ClaimValue));
+
+            if (result.Succeeded)
+            {
+                return Ok(role);
+            }
+
+            return Ok(new AddClaimRoleResponse());
         }
     }
 }
