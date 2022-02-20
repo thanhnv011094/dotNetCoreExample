@@ -5,7 +5,8 @@ namespace example.DataProvider
 {
     public interface IUnitOfWork : IDisposable
     {
-        IGroupReponsitory GroupReponsitory { get; }
+        IRoleReponsitory RoleReponsitory { get; }
+        IUserReponsitory UserReponsitory { get; }
 
         void Complete();
     }
